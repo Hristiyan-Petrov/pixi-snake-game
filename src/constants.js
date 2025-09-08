@@ -1,6 +1,6 @@
 export const GRID_SIZE = 20; // Each cell in the grid is 20x20 pixels
-export const GRID_WIDTH = 20; // 40 cells wide
-export const GRID_HEIGHT = 10; // 30 cells high
+export const GRID_WIDTH = 40; // 40 cells wide
+export const GRID_HEIGHT = 30; // 30 cells high
 
 export const GAME_SPEED = 150; // Snake moves every 150ms
 

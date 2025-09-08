@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { COLORS, GRID_HEIGHT, GRID_SIZE, GRID_WIDTH } from './constants';
+import { Snake } from './Snake';
 
 export class Game {
     constructor() {
@@ -23,5 +24,10 @@ export class Game {
         });
 
         console.log("PixiJS Application Initialized!");
+
+        // The "stage" is the root container of the entire PixiJS scene.
+        // This allows the Snake class to add its own container to the scene, making it visible.
+        this.snake = new Snake(this.app.stage);
+        console.log("SNAKE created!");
     }
 }
