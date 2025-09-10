@@ -50,7 +50,16 @@ function Game() {
                     x: prevSnake[0].x + direction.x,
                     y: prevSnake[0].y + direction.y
                 };
-                // Create new array for the snake's body
+
+                const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
+                if (hasEatenFood) {
+                    setFoodPosition(getRandomPosition());
+                    // Grow the snake by adding the new head without remving the tail
+                    return [newHead, ...prevSnake];
+                }
+
+                // Default Movement (no growth)
+                // render the new head (which is segment) and remove the tail (unmount last segment)
                 const newSnake = [newHead, ...prevSnake.slice(0, -1)];
                 return newSnake;
             });
