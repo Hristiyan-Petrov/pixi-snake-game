@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Dependencies
+node_modules/
+
+# Production build folder
+dist/
+
+# Vite-specific cache
+.vite/
+
+.gitignore
