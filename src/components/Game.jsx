@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTick } from '@pixi/react'
-import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED } from '../config';
+import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT } from '../config';
 import Food from '../components/Food';
 import Snake from '../components/Snake';
 import PropTypes from 'prop-types';
@@ -17,16 +17,16 @@ const DIRECTIONS = {
     RIGHT: { x: 1, y: 0 },
 };
 
-function Game(
+function Game({
     onGameOver,
     onEatFood,
     gameState,
     key
-) {
+}) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomPosition());
     const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
-    const [speed, setSpeed] = useState(INITIAL_SNAKE_SPEED);
+    const [speed, setSpeed] = useState(INITIAL_SNAKE_SPEED - 100);
 
     const timeSinceLastMove = useRef(0);
 
@@ -69,6 +69,8 @@ function Game(
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
                     setFoodPosition(getRandomPosition());
+                    setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
+                    onEatFood();
                     // Grow the snake by adding the new head without remving the tail
                     return [newHead, ...prevSnake];
                 }
