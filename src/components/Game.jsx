@@ -3,6 +3,7 @@ import { useTick } from '@pixi/react'
 import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED } from '../config';
 import Food from '../components/Food';
 import Snake from '../components/Snake';
+import PropTypes from 'prop-types';
 
 const getRandomPosition = () => ({
     x: Math.floor(Math.random() * BOARD_WIDTH),
@@ -16,7 +17,12 @@ const DIRECTIONS = {
     RIGHT: { x: 1, y: 0 },
 };
 
-function Game() {
+function Game(
+    onGameOver,
+    onEatFood,
+    gameState,
+    key
+) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomPosition());
     const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
@@ -26,12 +32,12 @@ function Game() {
 
     // Game loop
     useTick(delta => { // delta represents the time passed since the last frame
-        // console.log(delta);
+        if (gameState !== 'PLAYING') return;
 
-        // Step 1: Accumulate time
-        // 'delta' is a factor based on the ideal 60fps.
-        // We convert it to milliseconds to get the real time elapsed since the last frame.
-        timeSinceLastMove.current += delta * (1000 / 120) // Assuming 120 FPS
+            // Step 1: Accumulate time
+            // 'delta' is a factor based on the ideal 60fps.
+            // We convert it to milliseconds to get the real time elapsed since the last frame.
+            timeSinceLastMove.current += delta * (1000 / 120) // Assuming 120 FPS
 
         // Step 2: Check if enough time has passed
         // This is the gatekeeper. The code inside only runs if our stopwatch
@@ -123,7 +129,13 @@ function Game() {
                 y={foodPosition.y}
             />
         </>
-    )
-}
+    );
+};
+
+Game.propTypes = {
+  gameState: PropTypes.string.isRequired,
+  onEatFood: PropTypes.func.isRequired,
+  onGameOver: PropTypes.func.isRequired,
+};
 
 export default Game;

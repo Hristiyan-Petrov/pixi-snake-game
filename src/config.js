@@ -11,3 +11,4 @@ export const GAME_COLOR = 0x1d1d1d;
 export const SNAKE_COLOR = 0x00ff00;
 
 export const INITIAL_SNAKE_SPEED = 200; // ms per move
+export const SPEED_INCREMENT = 5;
