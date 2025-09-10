@@ -3,6 +3,7 @@ import './App.css'
 import { Stage } from '@pixi/react'
 import { BOARD_HEIGHT, BOARD_WIDTH, GAME_COLOR, GAME_HEIGHT, GAME_WIDTH } from './config';
 import Food from './components/Food';
+import Snake from './components/Snake';
 
 const getRandomPosition = () => ({
     x: Math.floor(Math.random() * BOARD_WIDTH),
@@ -10,6 +11,7 @@ const getRandomPosition = () => ({
 });
 
 function App() {
+    const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomPosition());
 
     return (
@@ -18,11 +20,12 @@ function App() {
             height={GAME_HEIGHT}
             options={{ backgroundColor: GAME_COLOR }}
         >
+            <Snake
+                segments={snake}
+            />
             <Food
                 x={foodPosition.x}
                 y={foodPosition.y}
-            // x={getRandomPosition().x}
-            // y={getRandomPosition().y}
             />
         </Stage>
     )
