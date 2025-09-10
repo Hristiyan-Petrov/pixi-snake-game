@@ -45,12 +45,21 @@ function Game() {
 
             // Step 4: Execute the game logic - update snake position
             // This is where we actually update the snake's position.
+
+            // 4.1. Calculate the new head position based on the current direction
             setSnake(prevSnake => {
                 const newHead = {
                     x: prevSnake[0].x + direction.x,
                     y: prevSnake[0].y + direction.y
                 };
 
+                // 4.2.  Wraparound Logic
+                if (newHead.x >= BOARD_WIDTH) newHead.x = 0;
+                if (newHead.x < 0) newHead.x = BOARD_WIDTH - 1;
+                if (newHead.y >= BOARD_HEIGHT) newHead.y = 0;
+                if (newHead.y < 0) newHead.y = BOARD_HEIGHT - 1;
+
+                // 4.3. Check for Food Collision
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
                     setFoodPosition(getRandomPosition());
@@ -58,7 +67,7 @@ function Game() {
                     return [newHead, ...prevSnake];
                 }
 
-                // Default Movement (no growth)
+                // 4.4 Default Movement (no growth)
                 // render the new head (which is segment) and remove the tail (unmount last segment)
                 const newSnake = [newHead, ...prevSnake.slice(0, -1)];
                 return newSnake;
