@@ -62,18 +62,26 @@ function Game() {
         const handleKeyDown = e => {
             console.log(e);
 
+            const currentDirectionVector = Object
+                .values(DIRECTIONS)
+                .find(dir => dir.x === direction.x && dir.y === direction.y);
+
             switch (e.key) {
                 case 'ArrowUp':
-                    setDirection(DIRECTIONS.UP);
+                    if (currentDirectionVector !== DIRECTIONS.DOWN)
+                        setDirection(DIRECTIONS.UP);
                     break;
                 case 'ArrowDown':
-                    setDirection(DIRECTIONS.DOWN);
+                    if (currentDirectionVector !== DIRECTIONS.UP)
+                        setDirection(DIRECTIONS.DOWN);
                     break;
                 case 'ArrowLeft':
-                    setDirection(DIRECTIONS.LEFT);
+                    if (currentDirectionVector !== DIRECTIONS.RIGHT)
+                        setDirection(DIRECTIONS.LEFT);
                     break;
                 case 'ArrowRight':
-                    setDirection(DIRECTIONS.RIGHT);
+                    if (currentDirectionVector !== DIRECTIONS.LEFT)
+                        setDirection(DIRECTIONS.RIGHT);
                     break;
 
                 default:
