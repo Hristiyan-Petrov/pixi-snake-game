@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import gsap from "gsap";
+import { useEffect, useRef } from "react";
 
 function GameUI({
     gameState,
@@ -6,6 +7,16 @@ function GameUI({
     onRestart
 }) {
     const scoreRef = useRef(0);
+
+    useEffect(() => {
+        if (scoreRef.current) {
+            gsap.fromTo(
+                scoreRef.current,
+                { scale: 1.5 },
+                { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.3)' }
+            );
+        }
+    }, [score]);
 
     return (
         <div className="game-ui">
