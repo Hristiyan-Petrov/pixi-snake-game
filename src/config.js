@@ -18,6 +18,7 @@ export const PARTICLES_COUNT_ON_FOOD_EAT = 15;
 export const GAME_STATES = {
   READY: 'READY',
   PLAYING: 'PLAYING',
-  GAME_OVER: 'GAME_OVER'
+  DYING: 'DYING',
+  GAME_OVER: 'GAME_OVER',
 };
 

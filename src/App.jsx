@@ -32,6 +32,13 @@ function App() {
         }
     };
 
+    const handleDeath = () => {
+        setGameState(GAME_STATES.DYING);
+        setTimeout(() => {
+            handleGameOver();
+        }, 2500); // snake dying animation time
+    };
+
     const handleGameStart = () => {
         setGameState(GAME_STATES.PLAYING);
     };
@@ -55,6 +62,7 @@ function App() {
                     gameState={gameState}
                     onEatFood={handleEatFood}
                     onGameStart={handleGameStart}
+                    onDeath={handleDeath}                    
                     onGameOver={handleGameOver}
                 />
             </Stage>

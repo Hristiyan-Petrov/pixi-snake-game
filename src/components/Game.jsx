@@ -32,7 +32,8 @@ function Game({
     onGameOver,
     onEatFood,
     gameState,
-    onGameStart
+    onDeath,
+    onGameStart,
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomSafePosition(snake));
@@ -111,7 +112,7 @@ function Game({
 
                 if (hitBody) {
                     soundCrash.play();
-                    onGameOver();
+                    onDeath();
                     return prevSnake; // Stop moving
                 }
 
@@ -202,6 +203,8 @@ function Game({
         <>
             <Snake
                 segments={snake}
+                direction={direction}
+                gameState={gameState}
             />
             <Food
                 x={foodPosition.x}
@@ -227,6 +230,8 @@ Game.propTypes = {
     gameState: PropTypes.string.isRequired,
     onEatFood: PropTypes.func.isRequired,
     onGameOver: PropTypes.func.isRequired,
+    onDeath: PropTypes.func.isRequired,
+    onGameStart: PropTypes.func.isRequired,
 };
 
 export default Game;
