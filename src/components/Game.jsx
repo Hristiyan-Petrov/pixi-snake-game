@@ -42,6 +42,7 @@ function Game({
     const soundCrash = useMemo(() => new Audio('/sounds/crash.mp3'));
 
     const timeSinceLastMove = useRef(0);
+    const canChangeDirection = useRef(true);
 
     // Game loop
     useTick(delta => { // delta represents the time passed since the last frame
@@ -50,7 +51,7 @@ function Game({
         // Step 1: Accumulate time
         // 'delta' is a factor based on the ideal 60fps.
         // We convert it to milliseconds to get the real time elapsed since the last frame.
-        timeSinceLastMove.current += delta * (1000 / 120) // Assuming 120 FPS
+        timeSinceLastMove.current += delta * (1000 / 60) // Assuming 60FPS
 
         // Step 2: Check if enough time has passed
         // This is the gatekeeper. The code inside only runs if our stopwatch
@@ -61,6 +62,9 @@ function Game({
             // We've met the condition, so we reset our timer back to 0
             // to start counting for the next move.
             timeSinceLastMove.current = 0;
+
+            // Allow a new direction change now
+            canChangeDirection.current = true;
 
             // Step 4: Execute the game logic - update snake position
             // This is where we actually update the snake's position.
@@ -93,11 +97,12 @@ function Game({
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
                     soundEat.play();
-                    setFoodPosition(getRandomSafePosition(snake));
+                    const newSnake = [newHead, ...prevSnake];
+                    setFoodPosition(getRandomSafePosition(newSnake));
                     setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
                     onEatFood();
                     // Grow the snake by adding the new head without remving the tail
-                    return [newHead, ...prevSnake];
+                    return newSnake;
                 }
 
                 // 4.5 Default Movement (no growth)
@@ -117,6 +122,7 @@ function Game({
             }
 
             if (gameState !== GAME_STATES.PLAYING) return;
+            if (!canChangeDirection.current) return;
 
             const currentDirectionVector = Object
                 .values(DIRECTIONS)
@@ -124,20 +130,28 @@ function Game({
 
             switch (e.key) {
                 case 'ArrowUp':
-                    if (currentDirectionVector !== DIRECTIONS.DOWN)
+                    if (currentDirectionVector !== DIRECTIONS.DOWN) {
+                        canChangeDirection.current = false;
                         setDirection(DIRECTIONS.UP);
+                    }
                     break;
                 case 'ArrowDown':
-                    if (currentDirectionVector !== DIRECTIONS.UP)
+                    if (currentDirectionVector !== DIRECTIONS.UP) {
+                        canChangeDirection.current = false;
                         setDirection(DIRECTIONS.DOWN);
+                    }
                     break;
                 case 'ArrowLeft':
-                    if (currentDirectionVector !== DIRECTIONS.RIGHT)
+                    if (currentDirectionVector !== DIRECTIONS.RIGHT) {
+                        canChangeDirection.current = false;
                         setDirection(DIRECTIONS.LEFT);
+                    }
                     break;
                 case 'ArrowRight':
-                    if (currentDirectionVector !== DIRECTIONS.LEFT)
+                    if (currentDirectionVector !== DIRECTIONS.LEFT) {
+                        canChangeDirection.current = false;
                         setDirection(DIRECTIONS.RIGHT);
+                    }
                     break;
 
                 default:
