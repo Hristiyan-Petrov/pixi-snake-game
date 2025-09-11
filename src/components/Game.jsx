@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTick } from '@pixi/react'
-import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT } from '../config';
+import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT, GAME_STATES } from '../config';
 import Food from '../components/Food';
 import Snake from '../components/Snake';
 import PropTypes from 'prop-types';
@@ -18,21 +18,25 @@ const DIRECTIONS = {
 };
 
 function Game({
+    key,
     onGameOver,
     onEatFood,
     gameState,
-    key
+    onGameStart
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomPosition());
     const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
     const [speed, setSpeed] = useState(INITIAL_SNAKE_SPEED - 100);
 
+    const soundEat = useMemo(() => new Audio('/sounds/eat.mp3'));
+    const soundCrash = useMemo(() => new Audio('/sounds/crash.mp3'));
+
     const timeSinceLastMove = useRef(0);
 
     // Game loop
     useTick(delta => { // delta represents the time passed since the last frame
-        if (gameState !== 'PLAYING') return;
+        if (gameState !== GAME_STATES.PLAYING) return;
 
             // Step 1: Accumulate time
             // 'delta' is a factor based on the ideal 60fps.
@@ -54,30 +58,32 @@ function Game({
 
             // 4.1. Calculate the new head position based on the current direction
             setSnake(prevSnake => {
-                const newHead = {
+                let newHead = {
                     x: prevSnake[0].x + direction.x,
                     y: prevSnake[0].y + direction.y
                 };
 
-                // 4.2 Self-collision check
-                const hitBody = prevSnake
-                    .slice(1)
-                    .some(segment => segment.x === newHead.x && segment.y === newHead.y);
-
-                if (hitBody) {
-                    onGameOver();
-                    return prevSnake; // Stop moving
-                }
-
-                // 4.3.  Wraparound Logic
+                // 4.2. Wraparound Logic
                 if (newHead.x >= BOARD_WIDTH) newHead.x = 0;
                 if (newHead.x < 0) newHead.x = BOARD_WIDTH - 1;
                 if (newHead.y >= BOARD_HEIGHT) newHead.y = 0;
                 if (newHead.y < 0) newHead.y = BOARD_HEIGHT - 1;
 
+                // 4.3. Self-collision check
+                const hitBody = prevSnake
+                    .slice(1)
+                    .some(segment => segment.x === newHead.x && segment.y === newHead.y);
+
+                if (hitBody) {
+                    soundCrash.play();
+                    onGameOver();
+                    return prevSnake; // Stop moving
+                }
+
                 // 4.4. Check for Food Collision
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
+                    soundEat.play();
                     setFoodPosition(getRandomPosition());
                     setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
                     onEatFood();
@@ -96,7 +102,12 @@ function Game({
     // Keyboard Input Handler
     useEffect(() => {
         const handleKeyDown = e => {
-            console.log(e);
+            if (gameState === GAME_STATES.READY) {
+                onGameStart();
+                return;
+            }
+
+            if (gameState !== GAME_STATES.PLAYING) return;
 
             const currentDirectionVector = Object
                 .values(DIRECTIONS)
@@ -129,7 +140,7 @@ function Game({
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [direction]); // Re-run effect if direction changes to get the latest value
+    }, [direction, gameState, onGameStart]); // Re-run effect if direction changes to get the latest value
 
     return (
         <>

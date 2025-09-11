@@ -1,13 +1,13 @@
 import './App.css'
 import { Stage, } from '@pixi/react'
-import { GAME_COLOR, GAME_HEIGHT, GAME_WIDTH } from './config';
+import { GAME_COLOR, GAME_HEIGHT, GAME_WIDTH, GAME_STATES } from './config';
 import Game from './components/Game';
 import { useState } from 'react';
 import GameUI from './components/UI/GameUI';
 
 function App() {
     const [score, setScore] = useState(0);
-    const [gameState, setGameState] = useState('PLAYING');
+    const [gameState, setGameState] = useState(GAME_STATES.READY);
 
     // Add a key to the Game component to force a full remount on restart
     const [gameKey, setGameKey] = useState(Date.now());
@@ -17,12 +17,16 @@ function App() {
     };
 
     const handleGameOver = () => {
-        setGameState('GAME_OVER');
+        setGameState(GAME_STATES.GAME_OVER);
+    };
+
+    const handleGameStart = () => {
+        setGameState(GAME_STATES.PLAYING);
     };
 
     const handleRestart = () => {
         setScore(0);
-        setGameState('PLAYING');
+        setGameState(GAME_STATES.READY);
         setGameKey(Date.now());
     };
 
@@ -34,10 +38,11 @@ function App() {
                 options={{ backgroundColor: GAME_COLOR }}
             >
                 <Game
-                    onGameOver={handleGameOver}
-                    onEatFood={handleEatFood}
-                    gameState={gameState}
                     key={gameKey}
+                    gameState={gameState}
+                    onEatFood={handleEatFood}
+                    onGameStart={handleGameStart}
+                    onGameOver={handleGameOver}
                 />
             </Stage>
             <GameUI

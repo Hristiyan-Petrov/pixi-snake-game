@@ -1,5 +1,6 @@
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
+import { GAME_STATES } from '../../config';
 
 function GameUI({
     gameState,
@@ -24,7 +25,15 @@ function GameUI({
                 SCORE: {score}
             </div>
 
-            {gameState === 'GAME_OVER' && (
+            {gameState === GAME_STATES.READY && (
+                <div className="game-over-overlay"> {/* <-- FIX: Was "gameover-overlay" */}
+                    <div className="game-over-text" style={{ fontSize: '2.5rem' }}>
+                        PRESS ANY KEY TO START
+                    </div>
+                </div>
+            )}
+
+            {gameState === GAME_STATES.GAME_OVER && (
                 <div className="game-over-overlay">
                     <div className="game-over-text">GAME OVER</div>
                     <button className="restart-button" onClick={onRestart}>
