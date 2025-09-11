@@ -13,7 +13,7 @@ function App() {
     const [gameKey, setGameKey] = useState(Date.now()); // Add a key to the Game component to force a full remount on restart
 
     useEffect(() => {
-        const storedHighScore = localStorage.getItem('HIGH_SCORE_KEY');
+        const storedHighScore = localStorage.getItem(HIGH_SCORE_KEY);
         if (storedHighScore) {
             setHightScore(parseInt(storedHighScore, 10));
         }
@@ -27,7 +27,7 @@ function App() {
         setGameState(GAME_STATES.GAME_OVER);
         if (score > highScore) {
             setHightScore(score);
-            localStorage.setItem('HIGH_SCORE_KEY', score.toString());
+            localStorage.setItem(HIGH_SCORE_KEY, score.toString());
             setIsNewHighScore(true);
         }
     };
