@@ -12,9 +12,11 @@ export const SNAKE_COLOR = 0x00ff00;
 
 export const INITIAL_SNAKE_SPEED = 200; // ms per move
 export const SPEED_INCREMENT = 5;
+export const HIGH_SCORE_KEY = 'snakeGameHighScore';
 
 export const GAME_STATES = {
   READY: 'READY',
   PLAYING: 'PLAYING',
   GAME_OVER: 'GAME_OVER'
 };
+

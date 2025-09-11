@@ -5,10 +5,19 @@ import Food from '../components/Food';
 import Snake from '../components/Snake';
 import PropTypes from 'prop-types';
 
-const getRandomPosition = () => ({
-    x: Math.floor(Math.random() * BOARD_WIDTH),
-    y: Math.floor(Math.random() * BOARD_HEIGHT),
-});
+const getRandomSafePosition = (snake) => {
+    let position;
+    let isOnSnake = true;
+
+    while (isOnSnake) {
+        position = {
+            x: Math.floor(Math.random() * BOARD_WIDTH),
+            y: Math.floor(Math.random() * BOARD_HEIGHT),
+        };
+        isOnSnake = snake.some(segment => segment.x === position.x && segment.y === position.y);
+    }
+    return position
+};
 
 const DIRECTIONS = {
     UP: { x: 0, y: -1 },
@@ -25,7 +34,7 @@ function Game({
     onGameStart
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
-    const [foodPosition, setFoodPosition] = useState(getRandomPosition());
+    const [foodPosition, setFoodPosition] = useState(getRandomSafePosition());
     const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
     const [speed, setSpeed] = useState(INITIAL_SNAKE_SPEED - 100);
 
@@ -38,10 +47,10 @@ function Game({
     useTick(delta => { // delta represents the time passed since the last frame
         if (gameState !== GAME_STATES.PLAYING) return;
 
-            // Step 1: Accumulate time
-            // 'delta' is a factor based on the ideal 60fps.
-            // We convert it to milliseconds to get the real time elapsed since the last frame.
-            timeSinceLastMove.current += delta * (1000 / 120) // Assuming 120 FPS
+        // Step 1: Accumulate time
+        // 'delta' is a factor based on the ideal 60fps.
+        // We convert it to milliseconds to get the real time elapsed since the last frame.
+        timeSinceLastMove.current += delta * (1000 / 120) // Assuming 120 FPS
 
         // Step 2: Check if enough time has passed
         // This is the gatekeeper. The code inside only runs if our stopwatch
@@ -84,7 +93,7 @@ function Game({
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
                     soundEat.play();
-                    setFoodPosition(getRandomPosition());
+                    setFoodPosition(getRandomSafePosition());
                     setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
                     onEatFood();
                     // Grow the snake by adding the new head without remving the tail
@@ -156,9 +165,9 @@ function Game({
 };
 
 Game.propTypes = {
-  gameState: PropTypes.string.isRequired,
-  onEatFood: PropTypes.func.isRequired,
-  onGameOver: PropTypes.func.isRequired,
+    gameState: PropTypes.string.isRequired,
+    onEatFood: PropTypes.func.isRequired,
+    onGameOver: PropTypes.func.isRequired,
 };
 
 export default Game;
