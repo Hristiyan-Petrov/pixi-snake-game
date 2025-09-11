@@ -2,7 +2,7 @@ import './App.css'
 import { Stage, } from '@pixi/react'
 import { GAME_COLOR, GAME_HEIGHT, GAME_WIDTH, GAME_STATES, HIGH_SCORE_KEY } from './config';
 import Game from './components/Game';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import GameUI from './components/UI/GameUI';
 
 function App() {
@@ -11,6 +11,18 @@ function App() {
     const [isNewHighScore, setIsNewHighScore] = useState(false);
     const [gameState, setGameState] = useState(GAME_STATES.READY);
     const [gameKey, setGameKey] = useState(Date.now()); // Add a key to the Game component to force a full remount on restart
+
+    const gameMusic = useMemo(() => new Audio('/sounds/music.mp3'), []);
+    gameMusic.loop = true;
+
+    useEffect(() => {
+        if (gameState === GAME_STATES.PLAYING) {
+            gameMusic.play()
+        } else {
+            gameMusic.pause();
+            gameMusic.currentTime = 0;
+        }
+    }, [gameState, gameMusic]);
 
     useEffect(() => {
         const storedHighScore = localStorage.getItem(HIGH_SCORE_KEY);
@@ -42,7 +54,7 @@ function App() {
     const handleGameStart = () => {
         setGameState(GAME_STATES.PLAYING);
     };
-    
+
     const handleRestart = () => {
         setScore(0);
         setGameState(GAME_STATES.READY);
@@ -62,7 +74,7 @@ function App() {
                     gameState={gameState}
                     onEatFood={handleEatFood}
                     onGameStart={handleGameStart}
-                    onDeath={handleDeath}                    
+                    onDeath={handleDeath}
                     onGameOver={handleGameOver}
                 />
             </Stage>
