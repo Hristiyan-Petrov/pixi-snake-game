@@ -4,7 +4,7 @@ import { Graphics, Sprite, useTick } from "@pixi/react";
 import PropTypes from 'prop-types';
 
 const getDirectionRotation = direction => {
-    if (direction) return 0;
+    if (!direction) return 0;
     if (direction.x === 1) return 0; // Right
     if (direction.x === -1) return Math.PI; // Left
     if (direction.y === 1) return Math.PI / 2; // Down
