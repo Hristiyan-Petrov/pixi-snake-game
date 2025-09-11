@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTick } from '@pixi/react'
-import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT, GAME_STATES } from '../config';
+import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT, GAME_STATES, PARTICLES_COUNT_ON_FOOD_EAT, GRID_SIZE } from '../config';
 import Food from '../components/Food';
 import Snake from '../components/Snake';
 import PropTypes from 'prop-types';
+import Particle from './Effects/Particle';
 
 const getRandomSafePosition = (snake) => {
     let position;
@@ -37,12 +38,33 @@ function Game({
     const [foodPosition, setFoodPosition] = useState(getRandomSafePosition(snake));
     const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
     const [speed, setSpeed] = useState(INITIAL_SNAKE_SPEED - 100);
+    const [effects, setEffects] = useState([]);
 
     const soundEat = useMemo(() => new Audio('/sounds/eat.mp3'));
     const soundCrash = useMemo(() => new Audio('/sounds/crash.mp3'));
 
     const timeSinceLastMove = useRef(0);
     const canChangeDirection = useRef(true);
+
+    const createBurst = (x, y) => {
+        const newParticles = [];
+        const numParticles = PARTICLES_COUNT_ON_FOOD_EAT;
+
+        for (let i = 0; i < numParticles; i++) {
+            console.log(i);
+
+            const angle = Math.random() * 2 * Math.PI;
+            const speed = 50 + Math.random() * 50 // Random speed
+            newParticles.push({
+                id: Date.now() + i,
+                x: x,
+                y: y,
+                velocityX: Math.cos(angle) * speed,
+                velocityY: Math.sin(angle) * speed,
+            });
+        }
+        setEffects(currEffects => [...currEffects, ...newParticles]);
+    };
 
     // Game loop
     useTick(delta => { // delta represents the time passed since the last frame
@@ -97,6 +119,13 @@ function Game({
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
                     soundEat.play();
+
+                    // Create the particle burst at the food's location
+                    createBurst(
+                        (foodPosition.x * GRID_SIZE),
+                        (foodPosition.y * GRID_SIZE),
+                    )
+
                     const newSnake = [newHead, ...prevSnake];
                     setFoodPosition(getRandomSafePosition(newSnake));
                     setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
@@ -165,6 +194,10 @@ function Game({
         };
     }, [direction, gameState, onGameStart]); // Re-run effect if direction changes to get the latest value
 
+    const handleEffectComplete = id => {
+        setEffects(currEffects => currEffects.filter(effect => effect.id !== id));
+    }
+
     return (
         <>
             <Snake
@@ -174,6 +207,18 @@ function Game({
                 x={foodPosition.x}
                 y={foodPosition.y}
             />
+
+            {effects.map(particle => (
+
+                <Particle
+                    key={particle.id}
+                    initialX={particle.x}
+                    initialY={particle.y}
+                    velocityX={particle.velocityX}
+                    velocityY={particle.velocityY}
+                    onComplete={() => handleEffectComplete(particle.id)}
+                />
+            ))}
         </>
     );
 };
