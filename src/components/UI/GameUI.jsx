@@ -1,10 +1,17 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import './GameUI.css';
 import { GAME_STATES } from '../../config';
 
-const GameUI = ({ score, gameState, onRestart }) => {
+const GameUI = ({
+    score,
+    gameState,
+    onRestart,
+    highScore,
+    isNewHighScore
+
+}) => {
     const scoreRef = useRef(null);
 
     // Animate the score whenever it changes
@@ -25,6 +32,9 @@ const GameUI = ({ score, gameState, onRestart }) => {
         <div className="game-ui">
             {/* Score is always visible */}
             <div className="score-container">
+                <div className="score" style={{ opacity: 0.7, fontSize: '1rem', paddingLeft: '2px' }}>
+                    High Score: {highScore}
+                </div>
                 <div ref={scoreRef} className="score">
                     Score: {score}
                 </div>
@@ -45,6 +55,11 @@ const GameUI = ({ score, gameState, onRestart }) => {
                     <div className="overlay-panel">
                         <div className="overlay-title">Game Over</div>
                         <div className="overlay-text">Your Score: {score}</div>
+                        {isNewHighScore && (
+                            <div className="overlay-text" style={{ opacity: 0.8, lineHeight: '2rem' }}>
+                               Congratulations! You set a new High Score: {highScore}
+                            </div>
+                        )}
                         <button className="restart-button" onClick={onRestart}>
                             Restart
                         </button>
@@ -57,6 +72,7 @@ const GameUI = ({ score, gameState, onRestart }) => {
 
 GameUI.propTypes = {
     score: PropTypes.number.isRequired,
+    highScore: PropTypes.number.isRequired,
     gameState: PropTypes.string.isRequired,
     onRestart: PropTypes.func.isRequired,
 };

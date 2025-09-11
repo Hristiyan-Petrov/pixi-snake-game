@@ -34,7 +34,7 @@ function Game({
     onGameStart
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
-    const [foodPosition, setFoodPosition] = useState(getRandomSafePosition());
+    const [foodPosition, setFoodPosition] = useState(getRandomSafePosition(snake));
     const [direction, setDirection] = useState(DIRECTIONS.RIGHT);
     const [speed, setSpeed] = useState(INITIAL_SNAKE_SPEED - 100);
 
@@ -93,7 +93,7 @@ function Game({
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
                     soundEat.play();
-                    setFoodPosition(getRandomSafePosition());
+                    setFoodPosition(getRandomSafePosition(snake));
                     setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
                     onEatFood();
                     // Grow the snake by adding the new head without remving the tail
