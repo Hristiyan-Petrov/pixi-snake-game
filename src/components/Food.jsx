@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { FOOD_COLOR, GRID_SIZE } from "../config";
-import { Graphics } from "@pixi/react";
+import { Graphics, Sprite } from "@pixi/react";
 import PropTypes from 'prop-types';
 
 function Food({ x, y }) {
@@ -14,11 +14,18 @@ function Food({ x, y }) {
     }, []);
 
     return (
-        <Graphics
-            draw={draw}
+        <Sprite
+            image='/assets/food.svg'
+            width={GRID_SIZE}
+            height={GRID_SIZE}
             x={x * GRID_SIZE}
             y={y * GRID_SIZE}
         />
+        // <Graphics
+        //     draw={draw}
+        //     x={x * GRID_SIZE}
+        //     y={y * GRID_SIZE}
+        // />
     );
 };
 

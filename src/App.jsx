@@ -1,6 +1,6 @@
 import './App.css'
 import { Stage, } from '@pixi/react'
-import { GAME_COLOR, GAME_HEIGHT, GAME_WIDTH, GAME_STATES } from './config';
+import { GAME_COLOR, GAME_HEIGHT, GAME_WIDTH, GAME_STATES, HIGH_SCORE_KEY } from './config';
 import Game from './components/Game';
 import { use, useEffect, useState } from 'react';
 import GameUI from './components/UI/GameUI';

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { GRID_SIZE, SNAKE_COLOR } from "../config";
-import { Graphics } from "@pixi/react";
+import { Graphics, Sprite } from "@pixi/react";
 import PropTypes from 'prop-types';
 
 function Snake({ segments }) {
@@ -14,11 +14,13 @@ function Snake({ segments }) {
     return (
         <>
             {segments.map((segment, index) => (
-                <Graphics
+                <Sprite
                     key={index}
-                    draw={draw}
+                    image='/assets/snake-segment.svg'
                     x={segment.x * GRID_SIZE}
                     y={segment.y * GRID_SIZE}
+                    width={GRID_SIZE}
+                    height={GRID_SIZE}
                 />
             ))}
         </>
