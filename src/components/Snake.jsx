@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { GAME_STATES, GRID_SIZE } from '../config';
 
 const getDirectionRotation = direction => {
-    if (!direction) return 0; // Guard for initial render
+    if (!direction) return 0;
     if (direction.x === 1) return 0; // Right
     if (direction.x === -1) return Math.PI; // Left
     if (direction.y === 1) return Math.PI / 2; // Down
@@ -17,15 +17,11 @@ const VisualSegment = ({ targetX, targetY, image, rotation, alpha }) => {
     const [y, setY] = useState(targetY);
     const [rot, setRot] = useState(rotation);
 
-    // This is the core interpolation logic. It runs on every single frame.
     useTick(delta => {
-        const smoothing = 0.2; // Increase for faster snapping, decrease for smoother gliding
-        
-        // Animate position
+        const smoothing = 0.2;
         setX(prevX => prevX + (targetX - prevX) * smoothing * delta);
         setY(prevY => prevY + (targetY - prevY) * smoothing * delta);
 
-        // Animate rotation (handles wrapping from PI to -PI)
         let rotDiff = rotation - rot;
         while (rotDiff < -Math.PI) rotDiff += 2 * Math.PI;
         while (rotDiff > Math.PI) rotDiff -= 2 * Math.PI;
@@ -80,7 +76,7 @@ function Snake({ segments, direction, gameState }) {
                 const isHead = index === 0;
                 return (
                     <VisualSegment
-                        key={index} // Keys must be stable based on the logical snake's structure
+                        key={index}
                         targetX={(logicalSegment.x * GRID_SIZE) + GRID_SIZE / 2}
                         targetY={(logicalSegment.y * GRID_SIZE) + GRID_SIZE / 2}
                         image={isHead ? '/assets/snake-head.svg' : '/assets/snake-segment.svg'}
