@@ -46,8 +46,6 @@ function Game({
         const numParticles = PARTICLES_COUNT_ON_FOOD_EAT;
 
         for (let i = 0; i < numParticles; i++) {
-            console.log(i);
-
             const angle = Math.random() * 2 * Math.PI;
             const speed = 50 + Math.random() * 50 // Random speed
             newParticles.push({
