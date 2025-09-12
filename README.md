@@ -6,7 +6,7 @@ A classic Snake game built with a modern, declarative approach using React and t
 
 ### **Live Demo**
 
-**[➡️ PLAY THE GAME HERE ⬅️](https://68c4014332ee57733126d421--zippy-fox-55a8fe.netlify.app/)**
+**[➡️ PLAY THE GAME HERE ⬅️](https://snake-game-pixi-react.netlify.app/)**
 
 ## Project Goal
 
