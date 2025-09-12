@@ -10,7 +10,7 @@ export const FOOD_COLOR = 0xff0000;
 export const GAME_COLOR = 0x1d1d1d;
 export const SNAKE_COLOR = 0x00ff00;
 
-export const INITIAL_SNAKE_SPEED = 200; // ms per move
+export const INITIAL_SNAKE_SPEED = 300; // ms per move
 export const SPEED_INCREMENT = 5;
 export const HIGH_SCORE_KEY = 'snakeGameHighScore';
 export const PARTICLES_COUNT_ON_FOOD_EAT = 15;
