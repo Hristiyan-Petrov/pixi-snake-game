@@ -116,3 +116,34 @@
   height: 32px;
   fill: var(--primary-font-color);
 }
+
+/*  GitHub link */
+.github-link-ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px; /* Modern way to add space between icon and text */
+  margin-top: 2.5rem; /* Add a bit more space from the text above */
+  
+  /* Appearance */
+  color: var(--primary-font-color); /* Make text white */
+  text-decoration: none;
+  opacity: 0.6;
+
+  /* Animation */
+  transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.github-link-ready:hover {
+  opacity: 1;
+  color: var(--accent-color); /* On hover, change text and icon to green */
+}
+
+/* This targets the icon SVG inside the link */
+.github-link-ready svg {
+  display: block;
+}
+
+.github-link-ready span {
+  font-size: 0.8rem;
+  line-height: 1;
+}
