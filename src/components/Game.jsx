@@ -26,7 +26,8 @@ function Game({
     onDeath,
     onGameStart,
     onEatFood,
-    isMuted
+    isMuted,
+    onPause
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomSafePosition(snake));
@@ -78,7 +79,7 @@ function Game({
         timeSinceLastMove,
         canChangeDirection
     );
-    useKeyboardControls(gameState, direction, setDirection, onGameStart, canChangeDirection);
+    useKeyboardControls(gameState, direction, setDirection, onGameStart, canChangeDirection, onPause);
 
     const handleEffectComplete = id => {
         setEffects(currEffects => currEffects.filter(effect => effect.id !== id));
@@ -116,6 +117,9 @@ Game.propTypes = {
     onEatFood: PropTypes.func.isRequired,
     onDeath: PropTypes.func.isRequired,
     onGameStart: PropTypes.func.isRequired,
+    onGameOver: PropTypes.func.isRequired,
+    isMuted: PropTypes.bool.isRequired,
+    onPause: PropTypes.func.isRequired,
 };
 
 export default Game;

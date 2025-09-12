@@ -2,7 +2,7 @@ import './App.css'
 import { Stage, } from '@pixi/react'
 import { GAME_COLOR, GAME_HEIGHT, GAME_WIDTH, GAME_STATES, HIGH_SCORE_KEY } from './config';
 import Game from './components/Game';
-import { use, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import GameUI from './components/UI/GameUI';
 
 function App() {
@@ -12,7 +12,6 @@ function App() {
     const [gameState, setGameState] = useState(GAME_STATES.READY);
     const [gameKey, setGameKey] = useState(Date.now()); // Add a key to the Game component to force a full remount on restart
     const [isMuted, setIsMuted] = useState(false); // \u003c-- NEW: Mute state
-
 
     const gameMusic = useMemo(() => new Audio('/sounds/music.mp3'), []);
     gameMusic.loop = true;
@@ -43,6 +42,14 @@ function App() {
 
     const handleEatFood = () => {
         setScore(prevScore => prevScore + 1);
+    };
+
+    const handlePause = () => {
+        if (gameState === GAME_STATES.PLAYING) {
+            setGameState(GAME_STATES.PAUSED);
+        } else if (gameState === GAME_STATES.PAUSED) {
+            setGameState(GAME_STATES.PLAYING);
+        }
     };
 
     const handleGameOver = () => {
@@ -87,6 +94,7 @@ function App() {
                     onGameStart={handleGameStart}
                     onDeath={handleDeath}
                     onGameOver={handleGameOver}
+                    onPause={handlePause}
                 />
             </Stage>
             <GameUI

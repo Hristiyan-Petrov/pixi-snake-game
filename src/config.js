@@ -19,6 +19,7 @@ export const GAME_STATES = {
   READY: 'READY',
   PLAYING: 'PLAYING',
   DYING: 'DYING',
+  PAUSED:'PAUSED',
   GAME_OVER: 'GAME_OVER',
 };
 

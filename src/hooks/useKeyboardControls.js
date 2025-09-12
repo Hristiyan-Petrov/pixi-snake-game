@@ -6,10 +6,19 @@ export const useKeyboardControls = (
     direction,
     setDirection,
     onGameStart,
-    canChangeDirection
+    canChangeDirection,
+    onPause
 ) => {
     useEffect(() => {
         const handleKeyDown = e => {
+            // Pause
+            if (e.key === ' ') {
+                if (gameState === GAME_STATES.READY) onGameStart();
+                    onPause();
+                return;
+            }
+
+            // Start
             if (gameState === GAME_STATES.READY) {
                 onGameStart();
                 return;
@@ -26,25 +35,21 @@ export const useKeyboardControls = (
             switch (e.key) {
                 case 'ArrowUp':
                     if (currentDirectionVector !== DIRECTIONS.DOWN) {
-                        setDirection(DIRECTIONS.UP);
                         newDirection = DIRECTIONS.UP;
                     }
                     break;
                 case 'ArrowDown':
                     if (currentDirectionVector !== DIRECTIONS.UP) {
-                        setDirection(DIRECTIONS.DOWN);
                         newDirection = DIRECTIONS.DOWN;
                     }
                     break;
                 case 'ArrowLeft':
                     if (currentDirectionVector !== DIRECTIONS.RIGHT) {
-                        setDirection(DIRECTIONS.LEFT);
                         newDirection = DIRECTIONS.LEFT;
                     }
                     break;
                 case 'ArrowRight':
                     if (currentDirectionVector !== DIRECTIONS.LEFT) {
-                        setDirection(DIRECTIONS.RIGHT);
                         newDirection = DIRECTIONS.RIGHT;
                     }
                     break;
@@ -63,6 +68,6 @@ export const useKeyboardControls = (
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [direction, gameState, onGameStart]); // Re-run effect if direction changes to get the latest value
+    }, [direction, gameState, onGameStart, onPause]); // Re-run effect if direction changes to get the latest value
 
 };

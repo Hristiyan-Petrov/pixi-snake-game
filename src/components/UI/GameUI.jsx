@@ -67,6 +67,14 @@ const GameUI = ({
                 </div>
             )}
 
+            {gameState === GAME_STATES.PAUSED && (
+                <div className="overlay">
+                    <div className="overlay-panel">
+                        <div className="overlay-title" style={{ fontSize: '1.5rem' }}>PAUSED</div>
+                    </div>
+                </div>
+            )}
+
             {/* Game Over State Overlay */}
             {gameState === GAME_STATES.GAME_OVER && (
                 <div className="overlay">
