@@ -10,7 +10,7 @@ export const FOOD_COLOR = 0xff0000;
 export const GAME_COLOR = 0x1d1d1d;
 export const SNAKE_COLOR = 0x00ff00;
 
-export const INITIAL_SNAKE_SPEED = 300; // ms per move
+export const INITIAL_SNAKE_SPEED = 200; // ms per move
 export const SPEED_INCREMENT = 5;
 export const HIGH_SCORE_KEY = 'snakeGameHighScore';
 export const PARTICLES_COUNT_ON_FOOD_EAT = 15;
@@ -22,3 +22,9 @@ export const GAME_STATES = {
   GAME_OVER: 'GAME_OVER',
 };
 
+export const DIRECTIONS = {
+    UP: { x: 0, y: -1 },
+    DOWN: { x: 0, y: 1 },
+    LEFT: { x: -1, y: 0 },
+    RIGHT: { x: 1, y: 0 },
+};

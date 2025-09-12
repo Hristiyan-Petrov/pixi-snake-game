@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTick } from '@pixi/react'
-import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT, GAME_STATES, PARTICLES_COUNT_ON_FOOD_EAT, GRID_SIZE } from '../config';
+import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT, GAME_STATES, PARTICLES_COUNT_ON_FOOD_EAT, GRID_SIZE, DIRECTIONS } from '../config';
 import Food from '../components/Food';
 import Snake from '../components/Snake';
 import PropTypes from 'prop-types';
 import Particle from './Effects/Particle';
+import { useKeyboardControls } from './useKeyboardControls';
 
 const getRandomSafePosition = (snake) => {
     let position;
@@ -18,13 +19,6 @@ const getRandomSafePosition = (snake) => {
         isOnSnake = snake.some(segment => segment.x === position.x && segment.y === position.y);
     }
     return position
-};
-
-const DIRECTIONS = {
-    UP: { x: 0, y: -1 },
-    DOWN: { x: 0, y: 1 },
-    LEFT: { x: -1, y: 0 },
-    RIGHT: { x: 1, y: 0 },
 };
 
 function Game({
@@ -66,6 +60,7 @@ function Game({
         }
         setEffects(currEffects => [...currEffects, ...newParticles]);
     };
+
 
     // Game loop
     useTick(delta => { // delta represents the time passed since the last frame
@@ -143,57 +138,7 @@ function Game({
         }
     });
 
-    // Keyboard Input Handler
-    useEffect(() => {
-        const handleKeyDown = e => {
-            if (gameState === GAME_STATES.READY) {
-                onGameStart();
-                return;
-            }
-
-            if (gameState !== GAME_STATES.PLAYING) return;
-            if (!canChangeDirection.current) return;
-
-            const currentDirectionVector = Object
-                .values(DIRECTIONS)
-                .find(dir => dir.x === direction.x && dir.y === direction.y);
-
-            switch (e.key) {
-                case 'ArrowUp':
-                    if (currentDirectionVector !== DIRECTIONS.DOWN) {
-                        canChangeDirection.current = false;
-                        setDirection(DIRECTIONS.UP);
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (currentDirectionVector !== DIRECTIONS.UP) {
-                        canChangeDirection.current = false;
-                        setDirection(DIRECTIONS.DOWN);
-                    }
-                    break;
-                case 'ArrowLeft':
-                    if (currentDirectionVector !== DIRECTIONS.RIGHT) {
-                        canChangeDirection.current = false;
-                        setDirection(DIRECTIONS.LEFT);
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (currentDirectionVector !== DIRECTIONS.LEFT) {
-                        canChangeDirection.current = false;
-                        setDirection(DIRECTIONS.RIGHT);
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [direction, gameState, onGameStart]); // Re-run effect if direction changes to get the latest value
+    useKeyboardControls(gameState, direction, setDirection, onGameStart, canChangeDirection);
 
     const handleEffectComplete = id => {
         setEffects(currEffects => currEffects.filter(effect => effect.id !== id));
