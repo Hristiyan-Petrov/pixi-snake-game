@@ -1,0 +1,32 @@
+<svg width="400" height="150" viewBox="0 0 400 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- This filter creates the classic 8-bit drop-shadow effect -->
+    <filter id="shadow" x="-5" y="-5" width="410" height="160">
+      <feOffset dx="4" dy="4" in="SourceAlpha" result="offset"/>
+      <feComponentTransfer in="offset" result="shadow-alpha">
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="shadow-alpha"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap');
+      .logo-text {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 64px;
+        fill: #FFFFFF;
+      }
+      .logo-accent {
+        fill: #00FF00;
+      }
+    </style>
+  </defs>
+
+  <g style="filter: url(#shadow);">
+    <text x="50%" y="70" dominant-baseline="middle" text-anchor="middle" class="logo-text">
+      PIXI <tspan class="logo-accent">SNAKE</tspan>
+    </text>
+  </g>
+</svg>

@@ -62,7 +62,9 @@ const GameUI = ({
             {gameState === GAME_STATES.READY && (
                 <div className="overlay">
                     <div className="overlay-panel">
-                        <div className="overlay-title" style={{ fontSize: '1.5rem' }}>Press Any Key To Start</div>
+                        <img src="/assets/logo.svg" alt="Pixi Snake Logo" className="logo-image" />
+                        <div className="overlay-title" style={{ fontSize: '1.5rem', marginTop: '20px' }}>
+                            Press Any Key To Start</div>
                     </div>
                 </div>
             )}
