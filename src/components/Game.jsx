@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useTick } from '@pixi/react'
+import { useMemo, useRef, useState } from 'react'
 import { BOARD_HEIGHT, BOARD_WIDTH, INITIAL_SNAKE_SPEED, SPEED_INCREMENT, GAME_STATES, PARTICLES_COUNT_ON_FOOD_EAT, GRID_SIZE, DIRECTIONS } from '../config';
 import Food from '../components/Food';
 import Snake from '../components/Snake';
 import PropTypes from 'prop-types';
 import Particle from './Effects/Particle';
-import { useKeyboardControls } from './useKeyboardControls';
+import { useKeyboardControls } from '../hooks/useKeyboardControls';
+import { useGameLoop } from '../hooks/useGameLoop';
 
 const getRandomSafePosition = (snake) => {
     let position;
@@ -22,11 +22,10 @@ const getRandomSafePosition = (snake) => {
 };
 
 function Game({
-    key,
-    onEatFood,
     gameState,
     onDeath,
     onGameStart,
+    onEatFood,
     isMuted
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
@@ -61,83 +60,24 @@ function Game({
         setEffects(currEffects => [...currEffects, ...newParticles]);
     };
 
-
-    // Game loop
-    useTick(delta => { // delta represents the time passed since the last frame
-        if (gameState !== GAME_STATES.PLAYING) return;
-
-        // Step 1: Accumulate time
-        // 'delta' is a factor based on the ideal 60fps.
-        // We convert it to milliseconds to get the real time elapsed since the last frame.
-        timeSinceLastMove.current += delta * (1000 / 60) // Assuming 60FPS
-
-        // Step 2: Check if enough time has passed
-        // This is the gatekeeper. The code inside only runs if our stopwatch
-        // has reached the value defined by our 'speed' variable.
-        if (timeSinceLastMove.current >= speed) {
-
-            // Step 3: Reset the stopwatch
-            // We've met the condition, so we reset our timer back to 0
-            // to start counting for the next move.
-            timeSinceLastMove.current = 0;
-
-            // Allow a new direction change now
-            canChangeDirection.current = true;
-
-            // Step 4: Execute the game logic - update snake position
-            // This is where we actually update the snake's position.
-
-            // 4.1. Calculate the new head position based on the current direction
-            setSnake(prevSnake => {
-                let newHead = {
-                    x: prevSnake[0].x + direction.x,
-                    y: prevSnake[0].y + direction.y
-                };
-
-                // 4.2. Wraparound Logic
-                if (newHead.x >= BOARD_WIDTH) newHead.x = 0;
-                if (newHead.x < 0) newHead.x = BOARD_WIDTH - 1;
-                if (newHead.y >= BOARD_HEIGHT) newHead.y = 0;
-                if (newHead.y < 0) newHead.y = BOARD_HEIGHT - 1;
-
-                // 4.3. Self-collision check
-                const hitBody = prevSnake
-                    .slice(1)
-                    .some(segment => segment.x === newHead.x && segment.y === newHead.y);
-
-                if (hitBody) {
-                    if (!isMuted) soundCrash.play();
-                    onDeath();
-                    return prevSnake; // Stop moving
-                }
-
-                // 4.4. Check for Food Collision
-                const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
-                if (hasEatenFood) {
-                    if (!isMuted) soundEat.play();
-
-                    // Create the particle burst at the food's location
-                    createBurst(
-                        (foodPosition.x * GRID_SIZE),
-                        (foodPosition.y * GRID_SIZE),
-                    )
-
-                    const newSnake = [newHead, ...prevSnake];
-                    setFoodPosition(getRandomSafePosition(newSnake));
-                    setSpeed(prevSpeed => prevSpeed - SPEED_INCREMENT);
-                    onEatFood();
-                    // Grow the snake by adding the new head without remving the tail
-                    return newSnake;
-                }
-
-                // 4.5 Default Movement (no growth)
-                // render the new head (which is segment) and remove the tail (unmount last segment)
-                const newSnake = [newHead, ...prevSnake.slice(0, -1)];
-                return newSnake;
-            });
-        }
-    });
-
+    useGameLoop(
+        gameState,
+        direction,
+        speed,
+        setSpeed,
+        foodPosition,
+        setFoodPosition,
+        setSnake,
+        isMuted,
+        soundCrash,
+        soundEat,
+        onDeath,
+        onEatFood,
+        createBurst,
+        getRandomSafePosition,
+        timeSinceLastMove,
+        canChangeDirection
+    );
     useKeyboardControls(gameState, direction, setDirection, onGameStart, canChangeDirection);
 
     const handleEffectComplete = id => {
@@ -174,7 +114,6 @@ function Game({
 Game.propTypes = {
     gameState: PropTypes.string.isRequired,
     onEatFood: PropTypes.func.isRequired,
-    onGameOver: PropTypes.func.isRequired,
     onDeath: PropTypes.func.isRequired,
     onGameStart: PropTypes.func.isRequired,
 };
