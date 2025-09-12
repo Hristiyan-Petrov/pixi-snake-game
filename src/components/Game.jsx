@@ -29,11 +29,11 @@ const DIRECTIONS = {
 
 function Game({
     key,
-    onGameOver,
     onEatFood,
     gameState,
     onDeath,
     onGameStart,
+    isMuted
 }) {
     const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
     const [foodPosition, setFoodPosition] = useState(getRandomSafePosition(snake));
@@ -111,7 +111,7 @@ function Game({
                     .some(segment => segment.x === newHead.x && segment.y === newHead.y);
 
                 if (hitBody) {
-                    soundCrash.play();
+                    if (!isMuted) soundCrash.play();
                     onDeath();
                     return prevSnake; // Stop moving
                 }
@@ -119,7 +119,7 @@ function Game({
                 // 4.4. Check for Food Collision
                 const hasEatenFood = newHead.x === foodPosition.x && newHead.y === foodPosition.y;
                 if (hasEatenFood) {
-                    soundEat.play();
+                    if (!isMuted) soundEat.play();
 
                     // Create the particle burst at the food's location
                     createBurst(
