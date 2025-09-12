@@ -1,19 +1,63 @@
-import { useCallback, useEffect, useState } from "react";
-import { GAME_STATES, GRID_SIZE, SNAKE_COLOR } from "../config";
-import { Graphics, Sprite, useTick } from "@pixi/react";
+import { Sprite, useTick } from '@pixi/react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { GAME_STATES, GRID_SIZE } from '../config';
 
 const getDirectionRotation = direction => {
-    if (!direction) return 0;
+    if (!direction) return 0; // Guard for initial render
     if (direction.x === 1) return 0; // Right
     if (direction.x === -1) return Math.PI; // Left
     if (direction.y === 1) return Math.PI / 2; // Down
     if (direction.y === -1) return -Math.PI / 2; // Up
+    return 0;
+};
+
+const VisualSegment = ({ targetX, targetY, image, rotation, alpha }) => {
+    const [x, setX] = useState(targetX);
+    const [y, setY] = useState(targetY);
+    const [rot, setRot] = useState(rotation);
+
+    // This is the core interpolation logic. It runs on every single frame.
+    useTick(delta => {
+        const smoothing = 0.2; // Increase for faster snapping, decrease for smoother gliding
+        
+        // Animate position
+        setX(prevX => prevX + (targetX - prevX) * smoothing * delta);
+        setY(prevY => prevY + (targetY - prevY) * smoothing * delta);
+
+        // Animate rotation (handles wrapping from PI to -PI)
+        let rotDiff = rotation - rot;
+        while (rotDiff < -Math.PI) rotDiff += 2 * Math.PI;
+        while (rotDiff > Math.PI) rotDiff -= 2 * Math.PI;
+        setRot(prevRot => prevRot + rotDiff * smoothing * delta);
+    });
+
+    return (
+        <Sprite
+            image={image}
+            x={x}
+            y={y}
+            width={GRID_SIZE}
+            height={GRID_SIZE}
+            anchor={0.5}
+            rotation={rot}
+            alpha={alpha}
+        />
+    );
+};
+
+VisualSegment.propTypes = {
+    targetX: PropTypes.number.isRequired,
+    targetY: PropTypes.number.isRequired,
+    image: PropTypes.string.isRequired,
+    rotation: PropTypes.number.isRequired,
+    alpha: PropTypes.number.isRequired,
 };
 
 function Snake({ segments, direction, gameState }) {
     const [alpha, setAlpha] = useState(1);
 
+    // Effect for the death animation flash
     useTick((delta, ticker) => {
         if (gameState === GAME_STATES.DYING) {
             const elapsed = ticker.elapsedMS / 1000;
@@ -21,39 +65,29 @@ function Snake({ segments, direction, gameState }) {
         }
     });
 
+    // Effect to reset the alpha when the game restarts
     useEffect(() => {
-        if (gameState!== GAME_STATES.DYING) {
+        if (gameState !== GAME_STATES.DYING) {
             setAlpha(1);
         }
     }, [gameState]);
 
     const headRotation = getDirectionRotation(direction);
 
-
-    const draw = useCallback(g => {
-        g.clear();
-        g.beginFill(SNAKE_COLOR);
-        g.drawRect(0, 0, GRID_SIZE, GRID_SIZE);  // Draws a square for the food
-        g.endFill();
-    }, []);
-
     return (
         <>
-            {segments.map((segment, index) => {
+            {segments.map((logicalSegment, index) => {
                 const isHead = index === 0;
                 return (
-                    <Sprite
-                        key={index}
+                    <VisualSegment
+                        key={index} // Keys must be stable based on the logical snake's structure
+                        targetX={(logicalSegment.x * GRID_SIZE) + GRID_SIZE / 2}
+                        targetY={(logicalSegment.y * GRID_SIZE) + GRID_SIZE / 2}
                         image={isHead ? '/assets/snake-head.svg' : '/assets/snake-segment.svg'}
-                        x={(segment.x * GRID_SIZE) + GRID_SIZE / 2}
-                        y={(segment.y * GRID_SIZE) + GRID_SIZE / 2}
-                        width={GRID_SIZE}
-                        height={GRID_SIZE}
-                        anchor={0.5}
                         rotation={isHead ? headRotation : 0}
                         alpha={alpha}
                     />
-                )
+                );
             })}
         </>
     );
@@ -67,10 +101,10 @@ Snake.propTypes = {
         })
     ).isRequired,
     direction: PropTypes.shape({
-        x: PropTypes.number.isRequired,
-        y: PropTypes.number.isRequired,
-    }),
-    gameState: PropTypes.string.isRequired
+        x: PropTypes.number,
+        y: PropTypes.number,
+    }).isRequired,
+    gameState: PropTypes.string.isRequired,
 };
 
 export default Snake;
